@@ -1,9 +1,11 @@
-import React, {useState} from 'react'
+import React, {useRef, useState, useEffect} from 'react'
 import './App.css';
 
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
+
+import me from "./me.png"
 
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
@@ -24,13 +26,8 @@ const firestore = firebase.firestore()
 function App() {
   const [user] = useAuthState(auth)
   return (
-    <div className="App">
-      <header className="App-header">
-        
-      </header>
-      <section>
-        {user ? <ChatRoom auth={auth} firestore={firestore} /> : <SignIn />}
-      </section>
+    <div className="main-container">
+      {user ? <ChatRoom auth={auth} firestore={firestore} /> : <SignIn />}
     </div>
   );
 }
@@ -42,17 +39,25 @@ const SignIn = () => {
   }
 
   return(
-    <button onClick={signInWithGoogle}>Sign In with Google</button>
+    <div className="sign-in-container">
+      <div className="button-sign-in-container">
+        <div className="title-container">
+          Chat With Fauzan 💌
+        </div>
+        <div className="button-sign-in button" onClick={signInWithGoogle}>Sign In Google</div>
+      </div>
+    </div>
   )
 }
 
 const ChatRoom = ({firestore, auth}) => {
+  const dummy = useRef();
   const messageRef = firestore.collection('messages')
-  const query = messageRef.orderBy('createdAt').limit(25)
+  const query = messageRef.orderBy('createdAt', 'desc').limit(10)
 
   const [messages] = useCollectionData(query, {idField: 'id'})
   const [formValue, setFormValue] = useState('')
-
+  
   const formHandler = (e) => {
     setFormValue(e.target.value)
   }
@@ -68,20 +73,32 @@ const ChatRoom = ({firestore, auth}) => {
       displayName
     })
     setFormValue('');
+    scrollHere()
   }
+
+  const scrollHere = () => {
+    dummy.current.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  useEffect(() => {
+    scrollHere()
+  });
+
   return (
     <div>
+      <Header />
       <div className="msg-container">
         {
-          messages && messages.map(msg => (
+          messages && messages.slice(0).reverse().map(msg => (
             <ChatMessage key={msg.id} auth={auth} message={msg} />
           ))
         }
+        <span ref={dummy}></span>
       </div>
-      <div className="form-container">
-        <form onSubmit={sendMessage}>
+      <div>
+        <form className="form-container" onSubmit={sendMessage}>
           <input type="text" value={formValue} onChange={formHandler}/>
-          <button type="submit" disabled={!formValue}>send</button>
+          <button className="button-send button" type="submit" disabled={!formValue}> send </button>
         </form>
       </div>
     </div>
@@ -93,24 +110,53 @@ const ChatMessage = ({message}) => {
   const uid = message.uid
   const photo = message.photoURL
   const name = message.displayName
-  const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received'
+  const textClass = uid === auth.currentUser.uid ? 'text-sent' : 'text-received'
+  const photoClass = uid === auth.currentUser.uid ? 'photo-sent' : 'photo-received'
+  const containerClass = uid === auth.currentUser.uid ? 'container-sent' : 'container-received'
+  const msgClass = uid === auth.currentUser.uid ? 'msg-sent' : 'msg-received'
   return (
-    <div className={`message ${messageClass}`}>
-      <img src={photo} alt="profil"/>
-      <p>{name}</p>
-      <p>{text}</p>
+    <div className={`message ${msgClass}`}>
+      <div className={`${photoClass}`}>
+        <img src={photo} alt="profil"/>
+      </div>
+      <div className={`text-chat-container ${containerClass}`}>
+        <div className={`person-name`}>{name}</div>
+        <div className={`person-text ${textClass}`}>{text}</div>
+      </div>
     </div>
   )
 }
 
-// const SignOut = ({auth}) => {
-//   const signOutGoogle = () => {
-//     auth.signOut()
-//   }
-//   return auth.currentUser && (
-//     <button onClick={signOutGoogle}>Sign Out</button>
-//   )
-// }
+const SignOut = () => {
+  const signOutGoogle = () => {
+    auth.signOut()
+  }
+  return auth.currentUser && (
+    <div className="button-sign-out button" onClick={signOutGoogle}>Sign Out</div>
+  )
+}
+
+const Header = () => {
+  return (
+    <div>
+      <div className="header-container">
+        <div className="profile-container">
+          <img className="profile-me" src={me} alt="foto"/>
+        </div>
+        <div className="group-title">
+          <div className="main-title">
+            Chat with Fauzan 💌
+          </div>
+          <div className="sub-title">
+            Aku, Kamu, Kita Hehehe
+          </div>
+        </div>
+        <div className="button-sign-out-container"><SignOut /></div>
+      </div>
+      <div className="hidden"></div>
+    </div>
+  )
+}
 
 
 export default App;
