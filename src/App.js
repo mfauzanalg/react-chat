@@ -44,7 +44,7 @@ const SignIn = () => {
         <div className="title-container">
           Chat With Fauzan 💌
         </div>
-        <div className="button-sign-in button" onClick={signInWithGoogle}>Sign In Google</div>
+        <div className="button-sign-in button" onClick={signInWithGoogle}>Google Sign In</div>
       </div>
     </div>
   )
@@ -53,7 +53,7 @@ const SignIn = () => {
 const ChatRoom = ({firestore, auth}) => {
   const dummy = useRef();
   const messageRef = firestore.collection('messages')
-  const query = messageRef.orderBy('createdAt', 'desc').limit(50)
+  const query = messageRef.orderBy('createdAt', 'desc').limit(100)
 
   const [messages] = useCollectionData(query, {idField: 'id'})
   const [formValue, setFormValue] = useState('')
@@ -97,7 +97,7 @@ const ChatRoom = ({firestore, auth}) => {
       </div>
       <div>
         <form className="form-container" onSubmit={sendMessage}>
-          <input type="text" value={formValue} onChange={formHandler}/>
+          <input placeholder="Kirim apa yaa...." type="text" value={formValue} onChange={formHandler}/>
           <button className="button-send button" type="submit" disabled={!formValue}> send </button>
         </form>
       </div>
