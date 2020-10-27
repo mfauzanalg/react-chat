@@ -59,12 +59,13 @@ const ChatRoom = ({firestore, auth}) => {
 
   const sendMessage = async (e) => {
     e.preventDefault()
-    const { uid, photoURL } = auth.currentUser;
+    const { uid, photoURL, displayName } = auth.currentUser;
     await messageRef.add({
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
-      photoURL
+      photoURL,
+      displayName
     })
     setFormValue('');
   }
@@ -91,11 +92,12 @@ const ChatMessage = ({message}) => {
   const text = message.text
   const uid = message.uid
   const photo = message.photoURL
-  console.log(photo)
+  const name = message.displayName
   const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received'
   return (
     <div className={`message ${messageClass}`}>
       <img src={photo} alt="profil"/>
+      <p>{name}</p>
       <p>{text}</p>
     </div>
   )
