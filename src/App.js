@@ -5,7 +5,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
 
-import me from "./me.png"
+import me from "./img/me.png"
 
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
@@ -53,7 +53,7 @@ const SignIn = () => {
 const ChatRoom = ({firestore, auth}) => {
   const dummy = useRef();
   const messageRef = firestore.collection('messages')
-  const query = messageRef.orderBy('createdAt', 'desc').limit(10)
+  const query = messageRef.orderBy('createdAt', 'desc').limit(50)
 
   const [messages] = useCollectionData(query, {idField: 'id'})
   const [formValue, setFormValue] = useState('')
