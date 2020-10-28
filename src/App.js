@@ -97,7 +97,7 @@ const ChatRoom = ({firestore, auth}) => {
       </div>
       <div>
         <form className="form-container" onSubmit={sendMessage}>
-          <input placeholder="Kirim apa yaa...." type="text" value={formValue} onClick={scrollHere} onChange={formHandler}/>
+          <input placeholder="Kirim apa yaa...." type="text" value={formValue} onFocus={scrollHere} onChange={formHandler}/>
           <button className="button-send button" type="submit" disabled={!formValue}> send </button>
         </form>
       </div>
