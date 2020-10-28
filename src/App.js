@@ -81,8 +81,10 @@ const ChatRoom = ({firestore, auth}) => {
   }
 
   useEffect(() => {
-    scrollHere()
-  });
+    setTimeout(function(){ 
+      scrollHere(); 
+    }, 900);
+  }, []);
 
   return (
     <div>
